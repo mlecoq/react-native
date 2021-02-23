@@ -62,6 +62,9 @@ public class ReactPdfUiFragment extends PdfUiFragment implements TouchIntercepto
 
     @Nullable private ReactPdfUiFragmentListener reactPdfUiFragmentListener;
 
+    private TouchInterceptorLayout touchInterceptorLayout;
+    private MyViewProvider viewProvider;
+
     private final FragmentManager.FragmentLifecycleCallbacks fragmentLifecycleCallbacks = new FragmentManager.FragmentLifecycleCallbacks() {
         @Override
         public void onFragmentCreated(@NonNull FragmentManager fm, @NonNull Fragment f, @Nullable Bundle savedInstanceState) {
