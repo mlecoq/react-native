@@ -21,8 +21,10 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -101,13 +103,17 @@ public class ReactPdfUiFragment extends PdfUiFragment implements TouchIntercepto
         }
     }
 
+    @Nullable
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        viewProvider = new MyViewProvider();
-
-        touchInterceptorLayout = getActivity().findViewById(R.id.pspdf__activity_fragment_container);
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        // Actually load and inflate the XML layout.
+        touchInterceptorLayout = (TouchInterceptorLayout) inflater.inflate(R.layout.pspdf__activity_fragment_container, container);
+        // Let the base class create the original view hierarchy. We don't replace it, but only wrap it.
+        final View rootView = super.onCreateView(inflater, container, savedInstanceState);
+        // Make sure the original view hierarchy is inside our touch interceptor.
+        touchInterceptorLayout.addView(rootView);
         touchInterceptorLayout.setOnMotionInterceptedListener(this);
 
         // We start intercepting once the long-press on the fragment is registered.
@@ -117,8 +123,13 @@ public class ReactPdfUiFragment extends PdfUiFragment implements TouchIntercepto
                     return true;
                 });
 
+        viewProvider = new MyViewProvider();
+
         // Add our custom view provider.
         getPdfFragment().addOverlayViewProvider(viewProvider);
+
+        // Return the touch interceptor as the view for this fragment.
+        return touchInterceptorLayout;
     }
 
     @Override
